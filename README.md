@@ -58,8 +58,8 @@ When prompted, enter the dataset file (e.g., `s4-BasketballData.R`). The script 
 ## Sample Visuals
 
 <p float="left">
-  <img src="s4-BasketballData/PointsPerGame.jpeg" width="45%" />
-  <img src="s4-BasketballData/SalaryPerMinute.jpeg" width="45%" />
+  <img src="sampleplots/PointsPerGame.jpeg" width="45%" />
+  <img src="sampleplots/SalaryPerMinute.jpeg" width="45%" />
 </p>
 
 ---
