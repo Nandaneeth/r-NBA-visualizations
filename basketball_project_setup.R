@@ -1,3 +1,4 @@
+# --------------------- Setup ---------------------
 # Print working directory
 cat("Current working directory:", getwd(), "\n")
 
@@ -33,80 +34,70 @@ writeLines(c(
   "LaTeX: pdfLaTeX"
 ), rproj_path)
 
-# Load the dataset
+# --------------------- Load & Libraries ---------------------
+# Load dataset
 source(file.path(project_name, file_name))
 
-# Utility to create JPEGs in project folder
-save_plot <- function(filename) {
-  jpeg(file.path(project_name, filename), width = 900, height = 600)
+# Load libraries
+library(ggplot2)
+library(reshape2)
+
+# Save ggplot2 plot to project folder
+save_ggplot <- function(plot, filename) {
+  ggsave(filename = file.path(project_name, filename),
+         plot = plot,
+         width = 10,
+         height = 6,
+         dpi = 300)
 }
 
-# --- Cleaned Calculations ---
+# --------------------- Visualizations ---------------------
 
-# 1. Field Goal Accuracy
+# --- 1. Field Goal Accuracy ---
 Accuracy <- FieldGoals / FieldGoalAttempts
 Accuracy[!is.finite(Accuracy)] <- NA
+Accuracy_df <- melt(Accuracy, varnames = c("Season", "Player"), value.name = "Accuracy")
 
-save_plot("FieldGoalAccuracy.jpeg")
-barplot(Accuracy,
-        beside = TRUE,
-        legend.text = Players,
-        main = "Field Goal Accuracy by Season",
-        col = rainbow(length(Players)),
-        las = 2)
-dev.off()
+p1 <- ggplot(Accuracy_df, aes(x = Season, y = Accuracy, fill = Player)) +
+  geom_col(position = "dodge") +
+  labs(title = "Field Goal Accuracy by Season", y = "Accuracy") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 2. Points Per Game
+save_ggplot(p1, "FieldGoalAccuracy.jpeg")
+
+# --- 2. Points Per Game ---
 PointsPerGame <- Points / Games
 PointsPerGame[!is.finite(PointsPerGame)] <- NA
+PPG_df <- melt(PointsPerGame, varnames = c("Season", "Player"), value.name = "PPG")
 
-save_plot("PointsPerGame.jpeg")
-barplot(PointsPerGame,
-        beside = TRUE,
-        legend.text = Players,
-        main = "Points Per Game",
-        col = heat.colors(length(Players)),
-        las = 2)
-dev.off()
+p2 <- ggplot(PPG_df, aes(x = Season, y = PPG, fill = Player)) +
+  geom_col(position = "dodge") +
+  labs(title = "Points Per Game", y = "Points") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 3. Minutes Played Per Game
+save_ggplot(p2, "PointsPerGame.jpeg")
+
+# --- 3. Minutes Played Per Game ---
 MinutesPerGame <- MinutesPlayed / Games
 MinutesPerGame[!is.finite(MinutesPerGame)] <- NA
+MPG_df <- melt(MinutesPerGame, varnames = c("Season", "Player"), value.name = "MPG")
 
-save_plot("MinutesPerGame.jpeg")
-barplot(MinutesPerGame,
-        beside = TRUE,
-        legend.text = Players,
-        main = "Minutes Played Per Game",
-        col = terrain.colors(length(Players)),
-        las = 2)
-dev.off()
+p3 <- ggplot(MPG_df, aes(x = Season, y = MPG, fill = Player)) +
+  geom_col(position = "dodge") +
+  labs(title = "Minutes Played Per Game", y = "Minutes") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
 
-# 4. Salary Per Minute
+save_ggplot(p3, "MinutesPerGame.jpeg")
+
+# --- 4. Salary Per Minute ---
 SalaryPerMinute <- Salary / MinutesPlayed
 SalaryPerMinute[!is.finite(SalaryPerMinute)] <- NA
+SPM_df <- melt(SalaryPerMinute, varnames = c("Season", "Player"), value.name = "SalaryPerMin")
 
-save_plot("SalaryPerMinute.jpeg")
-barplot(SalaryPerMinute,
-        beside = TRUE,
-        legend.text = Players,
-        main = "Salary per Minute Played ($)",
-        col = topo.colors(length(Players)),
-        las = 2)
-dev.off()
-
-# 5. Playing Style = (Points - 2 * FieldGoals) / FieldGoals
-# Shows how much players rely on 3-pointers or free throws
-StyleIndex <- (Points - 2 * FieldGoals) / FieldGoals
-StyleIndex[!is.finite(StyleIndex)] <- NA
-
-save_plot("PlayingStyleIndex.jpeg")
-barplot(StyleIndex,
-        beside = TRUE,
-        legend.text = Players,
-        main = "Playing Style Index (Higher = More 3s or FTs)",
-        col = cm.colors(length(Players)),
-        las = 2)
-dev.off()
-
-cat("✅ Project '", project_name, "' created with 5 cleaned analysis plots.\n", sep = "")
+p4 <- ggplot(SPM_df, aes(x = Season, y = SalaryPerMin, fill = Player)) +
+  geom_col(position = "dodge") +
+  labs(title = "Salary Per Minute Played", y = "Salary ($)") +
+  theme
